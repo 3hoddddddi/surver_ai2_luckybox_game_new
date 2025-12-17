@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MTN Rewards</title>
+    <style>
+        /* --- Global --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000;
+            overflow-x: hidden;
+        }
+
+        /* --- Header --- */
+        .header {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; }
+        .header-date { font-size: 14px; font-weight: bold; text-transform: uppercase; }
+        .wrapper { max-width: 600px; margin: 0 auto; }
+
+        /* --- Hero --- */
+        .hero-section {
+            padding: 25px 20px 10px;
+            text-align: center;
+            background: #fff;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 26px;
+            color: #000;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .status-line {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border-left: 4px solid #ffcc00;
+            margin-bottom: 15px;
+        }
+
+        .instruction-line { font-size: 16px; color: #444; line-height: 1.5; }
+        .highlight-text { font-weight: bold; color: #000; background: linear-gradient(180deg, transparent 60%, #fff59d 60%); }
+
+        /* --- Game Area --- */
+        .game-area { padding: 10px 20px 20px; background: #fff; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 350px; margin: 0 auto; }
+        .box { position: relative; aspect-ratio: 1; cursor: pointer; background: transparent; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+        .box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.2s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .box:active { transform: scale(0.95); }
+        .box.opened img { transform: scale(0.9); filter: none; }
+
+        /* --- Comments --- */
+        .comments-wrap {
+            padding: 20px 20px 60px;
+            background-color: #f7f7f7; 
+            border-top: 1px solid #eee;
+            margin-top: 0; 
+        }
+
+        .comments-header { display: flex; align-items: center; margin-bottom: 15px; color: #000; }
+        .comments-title { font-size: 15px; font-weight: bold; }
+        .status-dot { width: 8px; height: 8px; background-color: #00c300; border-radius: 50%; margin-right: 8px; }
+        .comment-item { display: flex; margin-bottom: 15px; font-size: 13px; }
+        .avatar-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; background: #eee; border: 1px solid #fff; flex-shrink: 0; object-fit: cover; }
+        .comment-content { flex: 1; padding-top: 2px; }
+        .user-name { font-weight: bold; color: #385898; font-size: 13px; margin-bottom: 2px; display: block; }
+        .user-text { color: #1c1e21; line-height: 1.4; font-size: 13px; margin-bottom: 4px; }
+        
+        .comment-meta { font-size: 12px; display: flex; align-items: center; color: #90949c; }
+        .meta-time { color: #999; }
+        .meta-sep { margin: 0 5px; } 
+        .meta-like { color: #90949c; cursor: default; } 
+        .meta-like.has-likes { color: #365899; font-weight: bold; }
+        .meta-reply { color: #90949c; cursor: default; }
+
+        /* --- Modal --- */
+        .modal-mask {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999;
+            justify-content: center; align-items: center; backdrop-filter: blur(2px);
+        }
+        .modal-box {
+            background: #fff; width: 85%; max-width: 320px; border-radius: 12px; padding: 30px 20px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: popIn 0.3s; position: relative; overflow: hidden; 
+        }
+        @keyframes popIn { from {opacity:0; transform:scale(0.8);} to {opacity:1; transform:scale(1);} }
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+        .btn-try { background: #333; color: #fff; padding: 14px; width: 100%; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer; animation: breathe 2s infinite; }
+        .btn-cta { display: block; background-color: #ffcc00; color: #000; text-decoration: none; font-weight: 900; padding: 16px; border-radius: 6px; font-size: 20px; border: none; cursor: pointer; width: 100%; box-sizing: border-box; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: breathe 1.5s infinite; }
+        
+        /* Updated Path */
+        .jackpot-img { max-width: 60%; margin: 10px auto; display: block; position: relative; z-index: 2; }
+
+        /* --- Prize List --- */
+        .prize-list-container {
+            margin: 15px 0; text-align: left; display: inline-block; position: relative; z-index: 2;
+        }
+        .prize-list-title {
+            text-align: center; font-weight: bold; color: #555; font-size: 15px; margin-bottom: 10px;
+        }
+        .prize-item { font-size: 16px; margin-bottom: 8px; color: #333; display: flex; align-items: center; }
+        .check-icon { color: #00c300; font-weight: bold; font-size: 18px; margin-right: 10px; }
+        .prize-text { font-weight: 700; color: #000; }
+        
+        /* --- Confetti Effect --- */
+        .confetti {
+            position: absolute; width: 8px; height: 12px; top: -20px; opacity: 0.8;
+            animation: fall linear infinite; z-index: 1;
+        }
+        .c-yellow { background: #ffcc00; left: 10%; animation-duration: 2.5s; animation-delay: 0s; }
+        .c-red { background: #d32f2f; left: 30%; animation-duration: 3s; animation-delay: 0.4s; width: 10px; height: 10px; }
+        .c-green { background: #00c300; left: 50%; animation-duration: 2.8s; animation-delay: 0.8s; }
+        .c-yellow-2 { background: #ffcc00; left: 70%; animation-duration: 3.2s; animation-delay: 1.2s; width: 12px; height: 8px; }
+        .c-red-2 { background: #d32f2f; left: 90%; animation-duration: 2.2s; animation-delay: 0.2s; }
+        .c-green-2 { background: #00c300; left: 20%; animation-duration: 3.5s; animation-delay: 1.5s; }
+        .c-yellow-3 { background: #ffcc00; left: 60%; animation-duration: 2.7s; animation-delay: 0.5s; }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+            100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-brand">MTN REWARDS</div>
+        <div class="header-date" id="headerDate">DEC 17</div>
+    </div>
+
+    <div class="wrapper">
+        <div class="hero-section">
+            <h1>Daily Customer Bonus</h1>
+            <div class="status-line">Device Verified: Daily Bonus Active.</div>
+            <div class="instruction-line">
+                Find the <span class="highlight-text">Jackpot box</span> below. <br>
+                You have <span style="color: #d32f2f; font-weight: bold;">(3)</span> free tries.
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="grid" id="boxGrid"></div>
+        </div>
+
+        <div class="comments-wrap">
+            <div class="comments-header">
+                <div class="status-dot"></div>
+                <span class="comments-title">Live Comments</span>
+            </div>
+
+            <div class="comment-item">
+                <img src="./luckybox/avatar6.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Zainab Sani</span>
+                    <div class="user-text">Best day ever! My iPhone is finally on the way. ❤️</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">Just now</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like">Like</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-item">
+                <img src="./luckybox/avatar5.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Yusuf Ibrahim</span>
+                    <div class="user-text">I tried yesterday and got nothing. Tried again today and won! Don't give up. 😂</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">Just now</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like has-likes">Like (1)</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-item">
+                <img src="./luckybox/avatar4.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Ngozi Obi</span>
+                    <div class="user-text">The 200GB data is legit. Browsing is fast now.</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">2m</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like">Like</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-item">
+                <img src="./luckybox/avatar3.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Emeka Okafor</span>
+                    <div class="user-text">Cash received (₦500,000). Thanks MTN!</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">5m</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like has-likes">Like (5)</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-item">
+                <img src="./luckybox/avatar2.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Chioma Adebayo</span>
+                    <div class="user-text">I thought it was a joke until I saw the cash. God bless.</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">8m</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like has-likes">Like (12)</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-item">
+                <img src="./luckybox/avatar1.jpg" class="avatar-img">
+                <div class="comment-content">
+                    <span class="user-name">Adewale Oke</span>
+                    <div class="user-text">Is this promo real? I see many people sharing it.</div>
+                    <div class="comment-meta">
+                        <span class="meta-time">12m</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-like has-likes">Like (33)</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-reply">Reply</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="modal-fail" class="modal-mask">
+        <div class="modal-box">
+            <h2 style="margin-top:0; color:#333;">Empty Box</h2>
+            <div style="font-size:50px; margin:15px 0;">😕</div>
+            <p>You have (<span id="count" style="color:#d32f2f; font-weight:bold;">2</span>) more chances.</p>
+            <button class="btn-try" onclick="hideModal('modal-fail')">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="modal-win" class="modal-mask">
+        <div class="modal-box">
+            <div class="confetti c-yellow"></div><div class="confetti c-red"></div><div class="confetti c-green"></div>
+            <div class="confetti c-yellow-2"></div><div class="confetti c-red-2"></div><div class="confetti c-green-2"></div>
+            <div class="confetti c-yellow-3"></div><div class="confetti c-red"></div><div class="confetti c-green"></div>
+            <div class="confetti c-yellow"></div><div class="confetti c-red-2"></div><div class="confetti c-green-2"></div>
+            <div class="confetti c-yellow-2"></div><div class="confetti c-red"></div><div class="confetti c-green"></div>
+
+            <h2 style="color:#d32f2f; margin-top:0; font-size: 24px; position: relative; z-index: 2;">JACKPOT CONFIRMED!</h2>
+            
+            <img src="./luckybox/prize_main.png" class="jackpot-img">
+            
+            <div class="prize-list-container">
+                <div class="prize-list-title">Available Prizes</div>
+
+                <div class="prize-item"><span class="check-icon">✓</span> <span class="prize-text">iPhone 17 Pro Max</span></div>
+                <div class="prize-item"><span class="check-icon">✓</span> <span class="prize-text">₦500,000 Cash</span></div>
+                <div class="prize-item"><span class="check-icon">✓</span> <span class="prize-text">200GB Data Bundle</span></div>
+            </div>
+            
+            <p style="font-size:13px; color:#666; margin-bottom: 10px; line-height: 1.4; position: relative; z-index: 2;">
+                Click below to proceed to the reward page.
+            </p>
+            
+            <a href="https://ky91x.bemobtrk.com/click" class="btn-cta" style="position: relative; z-index: 2;">CLAIM REWARD ➤</a>
+        </div>
+    </div>
+
+    <script>
+        const d = new Date();
+        const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+        document.getElementById('headerDate').innerText = months[d.getMonth()] + " " + d.getDate();
+        
+        // No like function needed
+        
+        let tries = 0; const grid = document.getElementById('boxGrid');
+        for (let i=0; i<9; i++) { 
+            let b = document.createElement('div'); 
+            b.className = 'box'; 
+            // Updated Path
+            b.innerHTML = '<img src="./luckybox/box_closed.png" onerror="this.style.opacity=0.3">'; 
+            b.onclick = function() { clickBox(this); }; 
+            grid.appendChild(b); 
+        }
+        function clickBox(el) { 
+            if (el.classList.contains('opened')) return; 
+            tries++; 
+            el.classList.add('opened'); 
+            let img = el.querySelector('img'); 
+            img.style.transform = "scale(0.9)"; 
+            if (tries < 3) { 
+                setTimeout(() => { 
+                    // Updated Path
+                    el.innerHTML = '<img src="./luckybox/box_open.png">'; 
+                    document.getElementById('count').innerText = 3 - tries; 
+                    showModal('modal-fail'); 
+                }, 400); 
+            } else { 
+                setTimeout(() => { 
+                    // Updated Path
+                    el.innerHTML = '<img src="./luckybox/prize_main.png">'; 
+                    showModal('modal-win'); 
+                }, 400); 
+            } 
+        }
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+        history.pushState(null, null, location.href); window.onpopstate = function () { history.go(1); };
+    </script>
+</body>
+</html>
