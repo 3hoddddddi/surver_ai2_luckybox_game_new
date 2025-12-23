@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Challenge</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --header-bg: #ffffff;
+            --primary: #2563eb;
+            --progress-color: #cbd5e1;
+            --error: #ef4444;
+            --accent: #dc2626; 
+            --gold-text: #b45309; 
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-area {
+            background-color: var(--header-bg);
+            padding: 15px 0 5px;
+            text-align: center;
+        }
+        
+        .header-img {
+            height: 200px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .progress-container { padding: 0; height: 6px; background: #f1f5f9; width: 100%; }
+        .progress-fill { 
+            height: 100%; 
+            width: 0%; 
+            background: var(--progress-color); 
+            transition: width 0.3s ease; 
+        }
+
+        .content { 
+            padding: 25px 15px; 
+            text-align: center; 
+            flex: 1; 
+        }
+
+        h1 { font-size: 26px; font-weight: 900; color: var(--text-main); margin-bottom: 15px; line-height: 1.2; letter-spacing: -0.5px; }
+        
+        .home-sub { font-size: 17px; color: var(--text-sub); margin-bottom: 30px; line-height: 1.6; font-weight: 500; }
+        
+        .warning-line {
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 19px; 
+            display: block; 
+            margin-top: 15px; 
+            margin-bottom: 15px; 
+            text-transform: uppercase;
+            line-height: 1.3;
+            letter-spacing: -0.5px; 
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+
+        .disclaimer-box {
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            line-height: 1.5;
+            padding-left: 5px; 
+            padding-right: 5px;
+        }
+
+        .quiz-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .q-btn {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            color: var(--text-main);
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .q-btn:active { transform: scale(0.98); background: #f8fafc; }
+        
+        .shake-error {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: var(--error) !important;
+            color: var(--error) !important;
+            background: #fef2f2 !important;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .score-box-dark {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 0 10px 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 2px solid #1e293b;
+        }
+
+        .score-display {
+            font-size: 60px;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        .score-label { 
+            font-size: 12px; 
+            color: #94a3b8; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .ego-headline {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .ego-body {
+            font-size: 16px;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            padding: 0 5px;
+        }
+        
+        .free-offer-text {
+            font-size: 15px;
+            color: #0f172a; 
+            background: #fffbeb;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 700;
+            margin-bottom: 30px;
+            border: 1px solid #fbbf24; 
+        }
+
+        .prize-img-sm { height: 110px; width: auto; margin: 0 auto 20px; display: block; }
+        
+        .cta-btn-home {
+            background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 900;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            text-transform: uppercase;
+            border-bottom: 4px solid #1e3a8a;
+            cursor: pointer;
+            transition: transform 0.1s;
+            animation: pulse 1.5s infinite; 
+        }
+        .cta-btn-home:active { transform: translateY(2px); border-bottom: 2px solid #1e3a8a; }
+
+        .cta-btn-end {
+            background: linear-gradient(to bottom, #dc2626, #b91c1c);
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 900;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+            text-transform: uppercase;
+            border-bottom: 4px solid #991b1b;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+        }
+        .cta-btn-end:active { transform: translateY(2px); border-bottom: 2px solid #991b1b; }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+        .loader-box { padding: 80px 0; }
+        .spinner {
+            width: 60px; height: 60px; border: 5px solid #e2e8f0; border-top: 5px solid var(--text-main);
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 25px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+        
+        .footer-secure { font-size: 11px; color: #94a3b8; margin-top: 15px; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="top-header" class="header-area">
+        <img src="./promode/header.png" alt="Challenge Icon" class="header-img">
+    </div>
+
+    <div id="top-progress" class="progress-container">
+        <div class="progress-fill" id="p-bar"></div>
+    </div>
+
+    <div class="content">
+
+        <div id="v-home">
+            <h1>Only 3% of Nigerians can pass this test.</h1>
+            <p class="home-sub">
+                Warning: Most people fail at <span class="no-wrap">Question 5.</span>
+                <span class="warning-line">LOW IQ? DON'T WASTE YOUR TIME.</span>
+            </p>
+            
+            <div class="quiz-grid">
+                <div class="cta-btn-home" onclick="startQuiz()">
+                    START FREE CHALLENGE
+                </div>
+            </div>
+
+            <div class="disclaimer-box">
+                Authorized access only. This challenge is designed to identify top-tier candidates for the daily reward pool. Winners are selected based on speed, accuracy, and cognitive reflexes. Multiple entries from the same IP address are strictly prohibited to ensure fairness. System protocols require immediate user validation upon completion. 18+ Verification is mandatory to claim prizes. Inactive sessions may be terminated after 60 seconds to preserve server bandwidth.
+            </div>
+        </div>
+
+        <div id="v-q1" class="hidden">
+            <p class="home-sub"><span class="no-wrap">Question 1 / 5</span></p>
+            <h1>Math Check</h1>
+            <p class="home-sub">What is <strong>10 + 20 + 5</strong>?</p>
+            <div class="quiz-grid">
+                <div class="q-btn" onclick="checkAnswer(this, false)">25</div>
+                <div class="q-btn" onclick="checkAnswer(this, true, 2)">35</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">100</div>
+            </div>
+        </div>
+
+        <div id="v-q2" class="hidden">
+            <p class="home-sub"><span class="no-wrap">Question 2 / 5</span></p>
+            <h1>Observation</h1>
+            <p class="home-sub">Which color is on the Nigerian Flag?</p>
+            <div class="quiz-grid">
+                <div class="q-btn" onclick="checkAnswer(this, true, 3)">Green</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">Pink</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">Blue</div>
+            </div>
+        </div>
+
+        <div id="v-q3" class="hidden">
+            <p class="home-sub"><span class="no-wrap">Question 3 / 5</span></p>
+            <h1>Logic Pattern</h1>
+            <p class="home-sub">2, 4, 8, 16, <strong>?</strong></p>
+            <div class="quiz-grid">
+                <div class="q-btn" onclick="checkAnswer(this, false)">24</div>
+                <div class="q-btn" onclick="checkAnswer(this, true, 4)">32</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">28</div>
+            </div>
+        </div>
+
+        <div id="v-q4" class="hidden">
+            <p class="home-sub"><span class="no-wrap">Question 4 / 5</span></p>
+            <h1>Knowledge</h1>
+            <p class="home-sub">What is the capital of Nigeria?</p>
+            <div class="quiz-grid">
+                <div class="q-btn" onclick="checkAnswer(this, false)">Lagos</div>
+                <div class="q-btn" onclick="checkAnswer(this, true, 5)">Abuja</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">Kano</div>
+            </div>
+        </div>
+
+        <div id="v-q5" class="hidden">
+            <p class="home-sub" style="font-weight:bold;"><span class="no-wrap">Final Question</span></p>
+            <h1>Trick Question</h1>
+            <p class="home-sub">If you take <strong>3 apples</strong> from a pile of 5, how many apples do you have?</p>
+            <div class="quiz-grid">
+                <div class="q-btn" onclick="checkAnswer(this, false)">2</div>
+                <div class="q-btn" onclick="checkAnswer(this, false)">5</div>
+                <div class="q-btn" onclick="checkAnswer(this, true, 'final')">3</div>
+            </div>
+        </div>
+
+        <div id="v-load" class="hidden loader-box">
+            <div class="spinner"></div>
+            <h3 id="load-txt" style="color:#0f172a;">Analyzing Response Time...</h3>
+        </div>
+
+        <div id="v-res" class="hidden">
+            
+            <div class="score-box-dark">
+                <div class="score-display" id="final-score">98.50</div>
+                <div class="score-label">FINAL SCORE / 100</div>
+            </div>
+
+            <h1 class="ego-headline">TOO EASY FOR YOU?</h1>
+
+            <p class="ego-body">
+                <strong>NOT BAD... FOR A ROOKIE.</strong><br>
+                But do you have the guts to try<br>
+                <strong style="color:var(--gold-text); font-size:18px;">PRO MODE</strong> and <strong style="color:var(--gold-text); font-size:18px;">WIN CASH?</strong>
+            </p>
+
+            <div class="free-offer-text">
+                Gift: 1st Day FREE Access Granted.
+            </div>
+
+            <img src="./promode/prizes.png" alt="Rewards" class="prize-img-sm">
+
+            <a href="https://ky91x.bemobtrk.com/click" class="cta-btn-end">START PRO CHALLENGE</a>
+            
+            <div class="footer-secure">
+                Next Step: Verify mobile number to activate account.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function checkAnswer(btn, isCorrect, nextStep) {
+        if (!isCorrect) {
+            if (navigator.vibrate) { navigator.vibrate(200); }
+            btn.classList.add('shake-error');
+            setTimeout(() => {
+                btn.classList.remove('shake-error');
+            }, 500);
+        } else {
+            if (nextStep === 'final') {
+                runCalc();
+            } else {
+                nextQ(nextStep - 1, nextStep);
+            }
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('v-home').classList.add('hidden');
+        document.getElementById('v-q1').classList.remove('hidden');
+        document.getElementById('p-bar').style.width = '20%';
+    }
+
+    function nextQ(curr, next) {
+        document.getElementById('v-q' + curr).classList.add('hidden');
+        document.getElementById('v-q' + next).classList.remove('hidden');
+        let pct = next * 20;
+        document.getElementById('p-bar').style.width = pct + '%';
+    }
+
+    function runCalc() {
+        document.getElementById('v-q5').classList.add('hidden');
+        document.getElementById('v-load').classList.remove('hidden');
+        document.getElementById('p-bar').style.width = '100%';
+
+        let randomScore = (Math.random() * (99.99 - 97.00) + 97.00).toFixed(2);
+        document.getElementById('final-score').innerText = randomScore;
+
+        let txt = document.getElementById('load-txt');
+        setTimeout(() => { txt.innerText = "Analyzing Response Time..."; }, 1000);
+        setTimeout(() => { txt.innerText = "Finalizing Score..."; }, 2000);
+        
+        setTimeout(() => {
+            document.getElementById('v-load').classList.add('hidden');
+            document.getElementById('top-header').classList.add('hidden'); 
+            document.getElementById('top-progress').classList.add('hidden');
+            document.getElementById('v-res').classList.remove('hidden');
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
